@@ -5,7 +5,7 @@
 
 // ── CONFIG ──────────────────────────────────────────
 const CONFIG = { // Configuration globale pour les contacts
-  whatsappNumber: '39028437',   // Numéro WhatsApp (sans +509)
+  whatsappNumber: '3902-8437',   // Numéro WhatsApp (sans +509)
   phone: '+509 39 02 8437',     // Téléphone de contact
   email: 'michaelherm27@gmail.com', // Email du support
   moncashNumber: '+509 46-27-0776', // Compte MonCash pour paiements
