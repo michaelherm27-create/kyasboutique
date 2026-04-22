@@ -13,365 +13,307 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KYA's – Boutique en Ligne</title>
-  <link rel="stylesheet" href="style.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <title>KIA'S WIGS AND BEAUTY – Boutique Perruques & Extensions</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
 
-<!-- FLOATING CONTACT BUTTONS -->
+<!-- Boutons de contact flottants (WhatsApp, Email, Téléphone) -->
 <div class="floating-contacts">
-  <a href="https://wa.me/+50939028437?text=Bonjour%2C%20je%20veux%20commander!" target="_blank" class="fab-btn whatsapp" title="WhatsApp">
-    <i class="fab fa-whatsapp"></i>
-  </a>
-  <a href="mailto:michaelherm27@gmail.com" class="fab-btn email" title="Email">
-    <i class="fas fa-envelope"></i>
-  </a>
-  <a href="tel:+50912345678" class="fab-btn phone" title="Appeler">
-    <i class="fas fa-phone"></i>
-  </a>
+  <a href="https://wa.me/50939088437?text=Bonjour%20KIA'S%20WIGS%20AND%20BEAUTY!%20Je%20voudrais%20commander." target="_blank" class="fab-btn whatsapp" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+  <a href="mailto:contact@kiaswigsandbeauty.com" class="fab-btn email" title="Email"><i class="fas fa-envelope"></i></a>
+  <a href="tel:+50912345678" class="fab-btn phone" title="Appeler"><i class="fas fa-phone"></i></a>
 </div>
 
-<!-- CART SIDEBAR -->
+<!-- Overlay et sidebar du panier -->
 <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
 <aside class="cart-sidebar" id="cartSidebar">
   <div class="cart-header">
-    <h2>Mon Panier</h2>
+    <h2><i class="fas fa-shopping-bag"></i> Mon Panier</h2>
     <button onclick="toggleCart()" class="close-cart"><i class="fas fa-times"></i></button>
   </div>
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-footer">
-    <div class="cart-total">
-      <span>Total:</span>
-      <span id="cartTotal">0 HTG</span>
-    </div>
-    <button class="btn-checkout" onclick="openCheckout()">
-      <i class="fas fa-lock"></i> Payer Maintenant
-    </button>
+    <div class="cart-total"><span>Total:</span><span id="cartTotal">0 HTG</span></div>
+    <button class="btn-checkout" onclick="openCheckout()"><i class="fas fa-lock"></i> Payer Maintenant</button>
   </div>
 </aside>
 
-<!-- CHECKOUT MODAL -->
 <div class="modal-overlay" id="checkoutModal">
   <div class="modal">
     <button class="modal-close" onclick="closeCheckout()"><i class="fas fa-times"></i></button>
     <div class="modal-header">
-      <h2>Finaliser la Commande</h2>
-      <p>Choisissez votre méthode de paiement</p>
+      <h2>✨ Finaliser la Commande</h2>
+      <p>Remplissez vos informations et choisissez votre paiement</p>
     </div>
     <div class="modal-body">
-      <div class="form-group">
-        <label>Nom complet</label>
-        <input type="text" id="custName" placeholder="Jean Dupont" />
-      </div>
-      <div class="form-group">
-        <label>Téléphone</label>
-        <input type="tel" id="custPhone" placeholder="+509 XX XX XXXX" />
-      </div>
-      <div class="form-group">
-        <label>Adresse de livraison</label>
-        <input type="text" id="custAddress" placeholder="Rue, Ville, Haiti" />
-      </div>
-
+      <div class="form-group"><label><i class="fas fa-user"></i> Nom complet</label><input type="text" id="custName" placeholder="Marie Dupont" /></div>
+      <div class="form-group"><label><i class="fas fa-phone"></i> Téléphone</label><input type="tel" id="custPhone" placeholder="+509 XX XX XXXX" /></div>
+      <div class="form-group"><label><i class="fas fa-map-marker-alt"></i> Adresse de livraison</label><input type="text" id="custAddress" placeholder="Rue, Ville, Haiti" /></div>
       <div class="payment-methods">
-        <h3>Méthode de Paiement</h3>
+        <h3><i class="fas fa-credit-card"></i> Méthode de Paiement</h3>
         <div class="payment-options">
-          <label class="payment-card" id="moncashCard">
-            <input type="radio" name="payment" value="moncash" onchange="selectPayment('moncash')" />
-            <div class="payment-logo">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/MonCash_Logo.png/200px-MonCash_Logo.png" alt="MonCash" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
-              <span class="payment-name-fallback" style="display:none">MonCash</span>
-              <div>
-                <strong>Mon Cash</strong>
-                <small>Paiement mobile Digicel</small>
-              </div>
-            </div>
+          <label class="payment-card" id="moncashCard" onclick="selectPayment('moncash')">
+            <input type="radio" name="payment" value="moncash" />
+            <div class="payment-logo"><div class="pay-icon mc-icon">MC</div><div><strong>Mon Cash</strong><small>Paiement Digicel</small></div></div>
           </label>
-          <label class="payment-card" id="natcashCard">
-            <input type="radio" name="payment" value="natcash" onchange="selectPayment('natcash')" />
-            <div class="payment-logo">
-              <img src="https://natcash.ht/wp-content/uploads/2020/08/natcash-logo.png" alt="NatCash" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
-              <span class="payment-name-fallback" style="display:none">NatCash</span>
-              <div>
-                <strong>Nat Cash</strong>
-                <small>Paiement mobile Natcom</small>
-              </div>
-            </div>
+          <label class="payment-card" id="natcashCard" onclick="selectPayment('natcash')">
+            <input type="radio" name="payment" value="natcash" />
+            <div class="payment-logo"><div class="pay-icon nc-icon">NC</div><div><strong>Nat Cash</strong><small>Paiement Natcom</small></div></div>
           </label>
         </div>
       </div>
-
-      <!-- MonCash Instructions -->
       <div class="payment-instructions" id="moncashInstructions" style="display:none">
         <div class="instruction-box moncash-box">
-          <i class="fas fa-mobile-alt"></i>
-          <h4>Instructions MonCash</h4>
+          <div class="inst-header"><i class="fas fa-mobile-alt"></i><h4>Instructions MonCash</h4></div>
           <ol>
-            <li>Ouvrez l'application <strong>MonCash</strong></li>
-            <li>Allez dans <strong>"Payer"</strong></li>
-            <li>Entrez le numéro: <strong>+509 37-00-0000</strong></li>
-            <li>Montant: <strong id="mcAmount"></strong></li>
-            <li>Entrez votre code PIN et confirmez</li>
-            <li>Partagez votre reçu via WhatsApp: <a href="#" id="mcWhatsapp"><i class="fab fa-whatsapp"></i> Envoyer le reçu</a></li>
+            <li>Ouvrez l'app <strong>MonCash</strong></li>
+            <li>Appuyez sur <strong>"Payer"</strong></li>
+            <li>Numéro marchand : <strong>+509 39-02-8437</strong></li>
+            <li>Montant : <strong id="mcAmount"></strong></li>
+            <li>Confirmez avec votre <strong>code PIN</strong></li>
+            <li>Envoyez votre reçu : <a href="#" id="mcWhatsapp" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
           </ol>
         </div>
       </div>
-
-      <!-- NatCash Instructions -->
       <div class="payment-instructions" id="natcashInstructions" style="display:none">
         <div class="instruction-box natcash-box">
-          <i class="fas fa-mobile-alt"></i>
-          <h4>Instructions NatCash</h4>
+          <div class="inst-header"><i class="fas fa-mobile-alt"></i><h4>Instructions NatCash</h4></div>
           <ol>
-            <li>Composez <strong>*444#</strong> sur votre téléphone Natcom</li>
+            <li>Composez <strong>*444#</strong> sur votre Natcom</li>
             <li>Sélectionnez <strong>"Transfert"</strong></li>
-            <li>Numéro du marchand: <strong>+509 36-00-0000</strong></li>
-            <li>Montant: <strong id="ncAmount"></strong></li>
-            <li>Confirmez avec votre PIN NatCash</li>
-            <li>Envoyez la confirmation: <a href="#" id="ncWhatsapp"><i class="fab fa-whatsapp"></i> Envoyer le reçu</a></li>
+            <li>Numéro marchand : <strong>+509 46-00-0947</strong></li>
+            <li>Montant : <strong id="ncAmount"></strong></li>
+            <li>Confirmez avec votre <strong>PIN NatCash</strong></li>
+            <li>Envoyez votre reçu : <a href="#" id="ncWhatsapp" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
           </ol>
         </div>
       </div>
-
-      <button class="btn-confirm" id="confirmBtn" onclick="confirmOrder()">
-        <i class="fas fa-check-circle"></i> Confirmer la Commande
-      </button>
+      <button class="btn-confirm" onclick="confirmOrder()"><i class="fas fa-check-circle"></i> Confirmer la Commande</button>
     </div>
   </div>
 </div>
 
-<!-- SUCCESS MODAL -->
 <div class="modal-overlay" id="successModal">
   <div class="modal modal-small">
     <div class="success-content">
-      <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+      <div class="success-icon">✅</div>
       <h2>Commande Confirmée!</h2>
       <p id="successMessage"></p>
-      <p class="order-id">Numéro de commande: <strong id="orderId"></strong></p>
+      <p class="order-id">N° de commande : <strong id="orderId"></strong></p>
       <button class="btn-confirm" onclick="closeSuccess()">Continuer les achats</button>
     </div>
   </div>
 </div>
 
-<!-- NAVBAR -->
-<header class="navbar">
+<!-- Lightbox - Visionneuse d'images en plein écran pour zoomer sur les produits -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lb-close" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
+  <img id="lbImg" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+
+<!-- Barre de navigation principale - Header avec logo, menu et actions -->
+<header class="navbar" id="navbar">
   <div class="nav-inner">
-    <a href="#" class="logo">
-      <span class="logo-icon">🛍</span>
-      <span>KYA's BOUTIQUE</span>
-    </a>
+    <!-- Logo de la marque KIA'S WIGS AND BEAUTY -->
+    <a href="#home" class="logo"><span class="logo-crown">👑</span><span>KIA'S WIGS<em>AND BEAUTY</em></span></a>
+    
+    <!-- Menu de navigation principal (desktop) -->
     <nav class="nav-links">
       <a href="#home">Accueil</a>
-      <a href="#products">Produits</a>
+      <a href="#products">Perruques</a>
       <a href="#about">À Propos</a>
       <a href="#contact">Contact</a>
     </nav>
+    
+    <!-- Actions de navigation : WhatsApp, Panier, Menu mobile -->
     <div class="nav-actions">
-      <button class="cart-btn" onclick="toggleCart()">
+      <a href="https://wa.me/50939028437" target="_blank" class="nav-wa" title="Contacter via WhatsApp"><i class="fab fa-whatsapp"></i></a>
+      <button class="cart-btn" onclick="toggleCart()" title="Voir le panier">
         <i class="fas fa-shopping-bag"></i>
         <span class="cart-count" id="cartCount">0</span>
       </button>
-      <button class="nav-toggle" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+      <button class="nav-toggle" onclick="toggleNav()" title="Menu mobile"><i class="fas fa-bars"></i></button>
     </div>
   </div>
+  
+  <!-- Menu de navigation mobile (masqué par défaut) -->
   <div class="mobile-nav" id="mobileNav">
     <a href="#home" onclick="toggleNav()">Accueil</a>
-    <a href="#products" onclick="toggleNav()">Produits</a>
+    <a href="#products" onclick="toggleNav()">Perruques</a>
     <a href="#about" onclick="toggleNav()">À Propos</a>
     <a href="#contact" onclick="toggleNav()">Contact</a>
   </div>
 </header>
 
-<!-- HERO -->
 <section class="hero" id="home">
-  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
   <div class="hero-content">
-    <div class="hero-badge">🇭🇹 Made in Haiti</div>
-    <h1>Votre Beauté<br/><em>est notre</em><br/>Satisfaction</h1>
-    <p>Découvrez nos produits locaux authentiques. Paiement facile par MonCash et NatCash. Livraison partout en Haïti.</p>
+    <div class="hero-tag">✨ Cheveux Humains 100% Naturels</div>
+    <h1>La Qualité<br/><em>en une seule</em><br/>reference</h1>
+    <p>Boutique de vente de perruques 100% humains, cheveux brésiliens et indiens. Densité de 180% a 250% toutes longueurs et couleurs. Paiement MonCash & NatCash.</p>
     <div class="hero-actions">
-      <a href="#products" class="btn-primary">Explorer les Produits <i class="fas fa-arrow-right"></i></a>
-      <a href="https://wa.me/50912345678" target="_blank" class="btn-whatsapp">
-        <i class="fab fa-whatsapp"></i> Commander via WhatsApp
-      </a>
+      <a href="#products" class="btn-primary">Voir les Perruques <i class="fas fa-arrow-right"></i></a>
+      <a href="https://wa.me/50939028437?text=Bonjour!%20Je%20voudrais%20commander%20une%20perruque." target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> Commander via WhatsApp</a>
     </div>
     <div class="hero-stats">
-      <div class="stat"><strong>500+</strong><span>Clients</span></div>
-      <div class="stat"><strong>100%</strong><span>Confiance</span></div>
+      <div class="stat"><strong>200+</strong><span>Clientes</span></div>
+      <div class="stat"><strong>100%</strong><span>Naturels</span></div>
       <div class="stat"><strong>24h/7</strong><span>Livraison</span></div>
     </div>
   </div>
-  <div class="hero-image">
-    <div class="hero-img-card">
-      <div class="hero-emoji">🛒</div>
-      <p>Livraison Express</p>
-    </div>
+  <div class="hero-imgs">
+    <img src="Images/cheveux_3.jpeg" alt="Perruque" class="hi hi1" />
+    <img src="Images/cheveux_6.jpeg" alt="Perruque" class="hi hi2" />
+    <img src="Images/cheveux_8.jpeg" alt="Perruque" class="hi hi3" />
   </div>
 </section>
 
-<!-- FEATURES BAR -->
-<section class="features-bar">
-  <div class="feature-item">
-    <i class="fas fa-truck"></i>
-    <div><strong>Livraison Rapide</strong><small>Partout en Haïti</small></div>
-  </div>
-  <div class="feature-item">
-    <i class="fas fa-mobile-alt"></i>
-    <div><strong>Paiement Mobile</strong><small>MonCash & NatCash</small></div>
-  </div>
-  <div class="feature-item">
-    <i class="fab fa-whatsapp"></i>
-    <div><strong>Support WhatsApp</strong><small>7j/7 – 8h à 20h</small></div>
-  </div>
-  <div class="feature-item">
-    <i class="fas fa-shield-alt"></i>
-    <div><strong>Achat Sécurisé</strong><small>Satisfaction garantie</small></div>
-  </div>
-</section>
+<div class="features-bar">
+  <div class="feature-item"><i class="fas fa-crown"></i><div><strong>Qualité Premium</strong><small>Cheveux humains 100%</small></div></div>
+  <div class="feature-item"><i class="fas fa-truck"></i><div><strong>Livraison Rapide</strong><small>Partout en Haïti</small></div></div>
+  <div class="feature-item"><i class="fas fa-mobile-alt"></i><div><strong>MonCash & NatCash</strong><small>Paiement facile</small></div></div>
+  <div class="feature-item"><i class="fab fa-whatsapp"></i><div><strong>Support WhatsApp</strong><small>Lun–Sam · 8h–20h</small></div></div>
+</div>
 
-<!-- PRODUCTS -->
 <section class="products-section" id="products">
   <div class="section-header">
-    <span class="section-tag">Notre Catalogue</span>
-    <h2>Nos Produits</h2>
-    <p>Sélectionnés avec soin pour vous offrir le meilleur</p>
+    <span class="section-tag">Notre Collection</span>
+    <h2>Perruques & Extensions</h2>
+    <p>Toutes nos perruques sont en cheveux humains 100% naturels · Lace Front HD</p>
   </div>
-
-  <div class="filter-bar">
-    <button class="filter-btn active" onclick="filterProducts('all', this)">Tout</button>
-    <!---<button class="filter-btn" onclick="filterProducts('alimentaire', this)">Alimentaire</button>-->
-    <button class="filter-btn" onclick="filterProducts('artisanat', this)">Artisanat</button>
-    <button class="filter-btn" onclick="filterProducts('beaute', this)">Beauté</button>
-    <button class="filter-btn" onclick="filterProducts('mode', this)">Mode</button>
-  </div>
-
   <div class="products-grid" id="productsGrid"></div>
 </section>
 
-<!-- ABOUT -->
+<!-- Section À Propos - Présentation de l'entreprise et ses avantages -->
 <section class="about-section" id="about">
-  <div class="about-img">
-    <div class="about-card">
-      <div class="about-emoji">🇭🇹</div>
-      <h3>Fier d'être Haïtien</h3>
-      <p>Entreprise 100% locale</p>
+  <!-- Partie visuelle avec collage d'images de produits -->
+  <div class="about-visual">
+    <div class="about-collage">
+      <img src="Images/cheveux_3.jpeg" alt="Perruque body wave" class="ac1" />
+      <img src="Images/cheveux_7.jpeg" alt="Perruque curly" class="ac2" />
+      <img src="Images/cheveux_9.jpeg" alt="Perruque water wave" class="ac3" />
     </div>
   </div>
+  
+  <!-- Contenu textuel de la section -->
   <div class="about-content">
-    <span class="section-tag">À Propos</span>
-    <h2>Qui Sommes-Nous?</h2>
-    <p>KYA's boutique est une plateforme e-commerce dédiée à promouvoir les produits de beauté, et art.</p>
-    <p>Notre mission est de faciliter le commerce local en offrant une expérience d'achat en ligne simple, sécurisée et accessible via les solutions de paiement mobile que vous connaissez déjà.</p>
+    <span class="section-tag">À Propos de Nous</span>
+    <h2>Pourquoi Choisir KIA'S WIGS AND BEAUTY?</h2>
+    <p>Chez KIA'S WIGS AND BEAUTY, nous sélectionnons uniquement des cheveux humains de haute qualité. Chaque perruque est inspectée avant livraison pour vous garantir le meilleur résultat.</p>
+    <p>Nous offrons une expérience d'achat facile avec paiement mobile et livraison rapide partout en Haïti.</p>
+    
+    <!-- Liste des avantages et caractéristiques -->
     <div class="about-features">
-      <div class="about-feature"><i class="fas fa-check"></i> Produits 100% haïtiens</div>
-      <div class="about-feature"><i class="fas fa-check"></i> Paiement mobile sécurisé</div>
-      <div class="about-feature"><i class="fas fa-check"></i> Livraison rapide</div>
-      <div class="about-feature"><i class="fas fa-check"></i> Service client réactif</div>
+      <div class="about-feature"><i class="fas fa-check-circle"></i> Cheveux humains 100% naturels</div>
+      <div class="about-feature"><i class="fas fa-check-circle"></i> Lace front HD invisible</div>
+      <div class="about-feature"><i class="fas fa-check-circle"></i> Paiement MonCash & NatCash</div>
+      <div class="about-feature"><i class="fas fa-check-circle"></i> Livraison rapide en Haïti</div>
+      <div class="about-feature"><i class="fas fa-check-circle"></i> Support WhatsApp 7j/7</div>
+      <div class="about-feature"><i class="fas fa-check-circle"></i> Satisfaction garantie</div>
     </div>
   </div>
 </section>
 
-<!-- CONTACT -->
+<!-- Section Contact - Formulaire et informations de contact -->
 <section class="contact-section" id="contact">
   <div class="section-header light">
     <span class="section-tag">Contactez-Nous</span>
     <h2>Nous Sommes Là Pour Vous</h2>
-    <p>Plusieurs façons de nous joindre</p>
+    <p>Choisissez comment vous préférez nous joindre</p>
   </div>
+  
+  <!-- Grille des méthodes de contact (WhatsApp, Email, Téléphone) -->
   <div class="contact-grid">
-    <a href="https://wa.me/50912345678?text=Bonjour%2C%20je%20voudrais%20avoir%20des%20informations." target="_blank" class="contact-card whatsapp-card">
-      <i class="fab fa-whatsapp"></i>
-      <h3>WhatsApp</h3>
-      <p>+509 12 34 5678</p>
-      <span>Réponse en moins de 30 min</span>
+    <a href="https://wa.me/50939028437?text=Bonjour%20KIA'S%20WIGS%20AND%20BEAUTY!" target="_blank" class="contact-card">
+      <i class="fab fa-whatsapp wa-icon"></i>
+      <h3>WhatsApp</h3><p>+509 39028437</p><span>Réponse rapide garantie</span>
     </a>
-    <a href="mailto:contact@boutiquehaiti.com" class="contact-card email-card">
-      <i class="fas fa-envelope"></i>
-      <h3>Email</h3>
-      <p>contact@boutiquehaiti.com</p>
-      <span>Réponse sous 24h</span>
+    <a href="mailto:contact@kiaswigsandbeauty.com" class="contact-card">
+      <i class="fas fa-envelope em-icon"></i>
+      <h3>Email</h3><p>contact@kiaswigsandbeauty.com</p><span>Réponse sous 24h</span>
     </a>
-    <a href="tel:+50912345678" class="contact-card phone-card">
-      <i class="fas fa-phone"></i>
-      <h3>Téléphone</h3>
-      <p>+509 12 34 5678</p>
-      <span>Lun-dim: 8h – 20h</span>
+    <a href="tel:+50939028437" class="contact-card">
+      <i class="fas fa-phone ph-icon"></i>
+      <h3>Téléphone</h3><p>+509 39028437</p><span>Lun–Sam : 8h – 20h</span>
     </a>
   </div>
-
+  
+  <!-- Formulaire de contact pour envoyer des messages -->
   <div class="contact-form-wrapper">
-    <h3>Envoyer un Message</h3>
+    <h3>✉️ Envoyer un Message</h3>
     <form id="contactForm" onsubmit="submitContact(event)">
+      <!-- Ligne avec nom et téléphone -->
       <div class="form-row">
-        <div class="form-group">
-          <label>Nom</label>
-          <input type="text" id="cName" placeholder="Votre nom" required />
-        </div>
-        <div class="form-group">
-          <label>Téléphone</label>
-          <input type="tel" id="cPhone" placeholder="+509 XX XX XXXX" required />
-        </div>
+        <div class="form-group"><label>Nom</label><input type="text" id="cName" placeholder="Votre nom" required /></div>
+        <div class="form-group"><label>Téléphone</label><input type="tel" id="cPhone" placeholder="+509 XX XX XXXX" required /></div>
       </div>
-      <div class="form-group">
-        <label>Email (optionnel)</label>
-        <input type="email" id="cEmail" placeholder="votre@email.com" />
-      </div>
-      <div class="form-group">
-        <label>Message</label>
-        <textarea id="cMessage" rows="4" placeholder="Comment pouvons-nous vous aider?" required></textarea>
-      </div>
-      <button type="submit" class="btn-primary">
-        <i class="fas fa-paper-plane"></i> Envoyer le Message
-      </button>
+      <!-- Email optionnel -->
+      <div class="form-group"><label>Email (optionnel)</label><input type="email" id="cEmail" placeholder="votre@email.com" /></div>
+      <!-- Message principal -->
+      <div class="form-group"><label>Message</label><textarea id="cMessage" rows="4" placeholder="Quelle perruque vous intéresse?" required></textarea></div>
+      <!-- Bouton d'envoi -->
+      <button type="submit" class="btn-primary full-w"><i class="fas fa-paper-plane"></i> Envoyer le Message</button>
     </form>
+    
+    <!-- Message de succès après envoi du formulaire -->
     <div class="form-success" id="formSuccess" style="display:none">
-      <i class="fas fa-check-circle"></i>
+      <div style="font-size:3rem">💌</div>
       <h4>Message envoyé!</h4>
-      <p>Nous vous répondrons très bientôt.</p>
+      <p>Nous vous répondrons via WhatsApp très bientôt.</p>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
+<!-- Pied de page - Informations de contact, liens et mentions légales -->
 <footer class="footer">
   <div class="footer-inner">
+    <!-- Section marque et description de l'entreprise -->
     <div class="footer-brand">
-      <div class="logo"><span class="logo-icon">🛍</span>KYA"s BOUTIQUE</div>
-      <p>Les produits de beauté et de la mode en bonne qualité à votre porté. Livraison partout en Haïti.</p>
+      <div class="logo footer-logo"><span class="logo-crown">👑</span>KIA'S WIGS<em>AND BEAUTY</em></div>
+      <p>Perruques & extensions en cheveux naturels. Livraison partout en Haïti.</p>
+      <!-- Liens vers les réseaux sociaux et contacts -->
       <div class="footer-social">
-        <a href="https://wa.me/50912345678" target="_blank"><i class="fab fa-whatsapp"></i></a>
-        <a href="mailto:contact@boutiquehaiti.com"><i class="fas fa-envelope"></i></a>
-        <a href="tel:+50912345678"><i class="fas fa-phone"></i></a>
+        <a href="https://wa.me/50939028437" target="_blank" title="Contacter via WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        <a href="mailto:contact@kiaswigsandbeauty.com" title="Envoyer un email"><i class="fas fa-envelope"></i></a>
+        <a href="tel:+50912345678" title="Appeler"><i class="fas fa-phone"></i></a>
       </div>
     </div>
+    
+    <!-- Liens de navigation du site -->
     <div class="footer-links">
-      <h4>Liens Rapides</h4>
+      <h4>Navigation</h4>
       <a href="#home">Accueil</a>
-      <a href="#products">Produits</a>
+      <a href="#products">Perruques</a>
       <a href="#about">À Propos</a>
       <a href="#contact">Contact</a>
     </div>
+    
+    <!-- Méthodes de paiement acceptées -->
     <div class="footer-links">
-      <h4>Paiements Acceptés</h4>
+      <h4>Paiements</h4>
       <div class="payment-badges">
-        <div class="pay-badge mc">MonCash</div>
-        <div class="pay-badge nc">NatCash</div>
+        <div class="pay-badge mc" title="MonCash - Digicel">MonCash</div>
+        <div class="pay-badge nc" title="NatCash - Natcom">NatCash</div>
       </div>
-      <p style="margin-top:1rem;font-size:.85rem;opacity:.7">Livraison: Plateau Central; Nord & environs<br/>Expédition: partout en Haïti</p>
     </div>
   </div>
+  
+  <!-- Copyright et mentions légales -->
   <div class="footer-bottom">
-    <p>© 2025 KYA's Boutique. Tous droits réservés.</p>
+    <p>© 2025 KIA'S WIGS AND BEAUTY · Tous droits réservés · 🇭🇹</p>
   </div>
 </footer>
 
-<!-- TOAST -->
+<!-- Toast pour les notifications utilisateur (messages de confirmation/erreur) -->
 <div class="toast" id="toast"></div>
 
-<script src="db.js"></script>
-<script src="app.js"></script>
-  <!-- Google tag (gtag.js) -->
+<!-- Scripts JavaScript - Chargement de la logique applicative -->
+<script src="db.js" defer></script> <!-- Base de données locale et gestion des produits -->
+<script src="app.js" defer></script> <!-- Logique principale de l'application -->
+<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q46SDNLMN7"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
