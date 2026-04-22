@@ -1,141 +1,218 @@
 /**
- * BoutiqueHaïti – Database (localStorage backend)
- * Simulates a real backend database for:
- *  - Products catalog
- *  - Customer orders
- *  - Contact messages
- *  - Payment records
+ * KIA'S WIGS AND BEAUTY – Database (localStorage)
+ * Produits: 11 vraies perruques avec photos
  */
 
-const DB = { // Objet principal qui simule la base de données
-  // ── CONFIG ──────────────────────────────────────
-  // Clés pour stocker les données dans localStorage
-  KEYS: {
-    ORDERS: 'bh_orders',     // Clé pour les commandes
-    MESSAGES: 'bh_messages', // Clé pour les messages de contact
-    CART: 'bh_cart',         // Clé pour le panier
-  },
-
-  // ── HELPERS ─────────────────────────────────────
-  // Récupère les données depuis localStorage
-  _get(key) {
-    try { return JSON.parse(localStorage.getItem(key)) || []; } // Parse JSON ou retourne arr vide
-    catch { return []; } // Si erreur, retourne arr vide
+// Objet principal de gestion de la base de données
+const DB = {
+  // Clés utilisées pour le localStorage
+  KEYS: { ORDERS: 'gh_orders', MESSAGES: 'gh_messages', CART: 'gh_cart' },
+  
+  // Méthode utilitaire pour récupérer des données du localStorage
+  _get(key) { 
+    try { 
+      return JSON.parse(localStorage.getItem(key)) || []; 
+    } catch { 
+      return []; 
+    } 
   },
   
-  // Sauvegarde les données dans localStorage
-  _set(key, data) {
-    localStorage.setItem(key, JSON.stringify(data)); // Convertit en JSON et stocke
+  // Méthode utilitaire pour sauvegarder des données dans le localStorage
+  _set(key, data) { 
+    localStorage.setItem(key, JSON.stringify(data)); 
   },
   
-  // Génère un ID unique pour chaque commande ou message
-  _id() {
-    return 'BH-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,5).toUpperCase();
-    // Format: BH-TIMESTAMP-RANDOM (ex: BH-ABCD1234-XYZ)
+  // Générateur d'ID unique pour les commandes et messages
+  _id() { 
+    return 'GH-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,5).toUpperCase(); 
   },
 
-  // ── PRODUCTS ────────────────────────────────────
-  // Catalogue statique de tous les produits
+  // Liste des produits disponibles
   products: [
-    { id: 1, name: 'Cheveux 100% Humain', category: 'beaute', price: 1200, currency: 'HTG', emoji: '🥃', bg: '#FFF3E0', desc: 'les cheveux sont de bonne qualité, vous trouverez ce qui vous plait.', badge: 'Best-seller' },
-    { id: 2, name: 'Café Haïtien Premium', category: 'alimentaire', price: 850, currency: 'HTG', emoji: '☕', bg: '#EFEBE9', desc: 'Café de montagne 100% arabica des Bleus de la Selle. Torréfié artisanalement.', badge: null },
-    { id: 3, name: 'Tableau Acrylique Haïtien', category: 'artisanat', price: 4500, currency: 'HTG', emoji: '🎨', bg: '#F3E5F5', desc: "Peinture originale représentant la vie quotidienne haïtienne. Pièce unique.", badge: 'Unique' },
-    { id: 4, name: 'Huile de Castor (Palma Christi)', category: 'beaute', price: 650, currency: 'HTG', emoji: '🌿', bg: '#E8F5E9', desc: 'Huile de ricin haïtienne pure, pressée à froid. Idéale pour cheveux et peau.', badge: null },
-    { id: 5, name: 'Chapeau de Paille Artisanal', category: 'mode', price: 1800, currency: 'HTG', emoji: '👒', bg: '#FFFDE7', desc: 'Chapeau tissé à la main par des artisanes de Jacmel. 100% naturel.', badge: null },
-    { id: 6, name: 'Confiture Mangue-Citron', category: 'alimentaire', price: 450, currency: 'HTG', emoji: '🥭', bg: '#FFF8E1', desc: "Confiture artisanale de mangues françaises d'Haïti, zeste de citron local.", badge: null },
-    { id: 7, name: 'Sac en Raphia Naturel', category: 'mode', price: 2200, currency: 'HTG', emoji: '👜', bg: '#F1F8E9', desc: 'Sac tressé à la main en raphia naturel haïtien. Design contemporain.', badge: 'Nouveau' },
-    { id: 8, name: 'Savon au Beurre de Karité', category: 'beaute', price: 350, currency: 'HTG', emoji: '🧴', bg: '#E3F2FD', desc: 'Savon naturel haïtien enrichi en beurre de karité et huile de coco.', badge: null },
-    { id: 9, name: 'Sculpture en Métal Recyclé', category: 'artisanat', price: 6500, currency: 'HTG', emoji: '🗿', bg: '#ECEFF1', desc: 'Sculpture haïtienne traditionnelle en fer recyclé. Artiste de Croix-des-Bouquets.', badge: 'Art' },
-    { id: 10, name: 'Piment Bouc Séché', category: 'alimentaire', price: 300, currency: 'HTG', emoji: '🌶️', bg: '#FFEBEE', desc: 'Piment bouc haïtien séché et broyé. 100% naturel, sans additifs.', badge: null },
-    { id: 11, name: 'Robe Traditionnelle Madras', category: 'mode', price: 3500, currency: 'HTG', emoji: '👗', bg: '#FCE4EC', desc: 'Robe festive en tissu madras coloré. Couture haïtienne authentique.', badge: null },
-    { id: 12, name: 'Huile Essentielle Vétiver', category: 'beaute', price: 950, currency: 'HTG', emoji: '🌾', bg: '#E8F5E9', desc: "L'huile de vétiver d'Haïti est reconnue comme la meilleure au monde.", badge: 'Premium' },
+    {
+      id: 1, name: 'Body Wave Longue – Lace Front',
+      type: 'Lace Front · Body Wave',
+      length: '22 pouces', price: 8500,
+      img: "Images/cheveux_1.jpeg",
+      desc: 'Perruque body wave longue et volumineuse. Cheveux humains 100% naturels. Lace front transparent invisible.',
+      badge: 'Best-seller', inStock: true
+    },
+    {
+      id: 2, name: 'Deep Wave Bob – Lace Front',
+      type: 'Lace Front · Deep Wave',
+      length: '14 pouces', price: 7200,
+      img: 'Images/cheveux_2.jpeg',
+      desc: 'Bob mi-long avec boucles deep wave définies. Lace front HD pour une coiffure naturelle.',
+      badge: null, inStock: true
+    },
+    {
+      id: 3, name: 'Kinky Curly Long – Lace Front',
+      type: 'Lace Front · Kinky Curly',
+      length: '18 pouces', price: 9000,
+      img: 'Images/cheveux_3.jpeg',
+      desc: 'Boucles kinky naturelles et volumineuses. Cheveux humains premium. Look naturel parfait.',
+      badge: 'Populaire', inStock: true
+    },
+    {
+      id: 4, name: 'Body Wave Bob – Lace Front',
+      type: 'Lace Front · Body Wave',
+      length: '12 pouces', price: 6500,
+      img: 'Images/cheveux_4.jpeg',
+      desc: 'Bob élégant avec vagues douces. Coupe chic et moderne. Parfait pour toutes les occasions.',
+      badge: null, inStock: true
+    },
+    {
+      id: 5, name: 'Curly Bob avec Frange',
+      type: 'Full Machine · Curly',
+      length: '12 pouces', price: 5800,
+      img: 'Images/cheveux_5.jpeg',
+      desc: 'Bob bouclé avec frange intégrée. Sans colle, facile à porter. Style décontracté et chic.',
+      badge: 'Nouveau', inStock: true
+    },
+    {
+      id: 6, name: 'Straight Bob Court – Lace Front',
+      type: 'Lace Front · Straight',
+      length: '10 pouces', price: 6200,
+      img: 'Images/cheveux_6.jpeg',
+      desc: 'Bob lisse court ultra chic. Cheveux lisses soyeux. Lace front HD invisible et naturel.',
+      badge: null, inStock: true
+    },
+    {
+      id: 7, name: 'Deep Curly Bob – Lace Front HD',
+      type: 'Lace Front HD · Deep Curly',
+      length: '14 pouces', price: 7800,
+      img: 'Images/cheveux_7.jpeg',
+      desc: 'Boucles deep curly denses et luxueuses. Lace HD nouvelle génération. Volume exceptionnel.',
+      badge: 'Premium', inStock: true
+    },
+    {
+      id: 8, name: 'Straight Bob Lisse – Lace Front',
+      type: 'Lace Front · Straight',
+      length: '12 pouces', price: 6800,
+      img: 'Images/cheveux_8.jpeg',
+      desc: 'Bob lisse parfaitement coupé. Cheveux naturels soyeux. Style moderne et professionnel.',
+      badge: null, inStock: true
+    },
+    {
+      id: 9, name: 'Water Wave Bob – Lace Front HD',
+      type: 'Lace Front HD · Water Wave',
+      length: '14 pouces', price: 7500,
+      img: 'Images/cheveux_9.jpeg',
+      desc: 'Ondulations water wave naturelles. Lace HD ultra-réaliste. Coiffure glamour et tendance.',
+      badge: null, inStock: true
+    },
+    {
+      id: 10, name: 'Kinky Curly Bob – Lace Front',
+      type: 'Lace Front · Kinky Curly',
+      length: '12 pouces', price: 7000,
+      img: 'Images/cheveux_10.jpeg',
+      desc: 'Boucles kinky courtes et dynamiques. Cheveux humains naturels. Style afro chic.',
+      badge: null, inStock: true
+    },
+    {
+      id: 11, name: 'Bob Coloré Ginger – Lace Front',
+      type: 'Lace Front · Straight · Coloré',
+      length: '10 pouces', price: 8200,
+      img: 'Images/cheveux_11.jpeg',
+      desc: 'Bob lisse couleur ginger/roux tendance. Cheveux humains teints professionnellement. Unique et audacieux.',
+      badge: 'Exclusif', inStock: true
+    },
   ],
 
-  // Récupère tous les produits ou filterés par catégorie
-  getProducts(category = 'all') { // Par défaut retourne tous
-    if (category === 'all') return this.products; // Si 'all', retourne tout
-    return this.products.filter(p => p.category === category); // Filtre par catégorie
-  },
+  // ── MÉTHODES PRODUITS ──────────────────────────────
+  // Retourne la liste complète des produits
+  getProducts() { return this.products; },
+  
+  // Retourne un produit spécifique par son ID
+  getProduct(id) { return this.products.find(p => p.id === id); },
 
-  // Récupère un produit spécifique par son ID
-  getProduct(id) {
-    return this.products.find(p => p.id === id); // Cherche le produit avec cet ID
-  },
-
-  // ── CART ────────────────────────────────────────
-  // Récupère le panier actuel du localStorage
+  // ── MÉTHODES PANIER ────────────────────────────────
+  // Retourne le contenu actuel du panier
   getCart() { return this._get(this.KEYS.CART); },
-
-  // Ajoute un produit au panier (ou augmente la quantité si déjà présent)
+  
+  // Ajoute un produit au panier (quantité par défaut = 1)
   addToCart(productId, qty = 1) {
-    const cart = this.getCart();                             // Récupère le panier
-    const product = this.getProduct(productId);              // Cherche le produit
-    if (!product) return null;                               // Si produit inexistant, arrête
-    const existing = cart.find(i => i.productId === productId); // Vérifie si déjà dans panier
-    if (existing) {
-      existing.qty += qty;  // Si déjà présent, augmente quantité
-    } else {
-      // Sinon, ajoute un nouvel article
-      cart.push({ productId, name: product.name, price: product.price, emoji: product.emoji, qty });
+    // Étape 1: Récupérer le panier actuel
+    const cart = this.getCart();
+    
+    // Étape 2: Trouver le produit
+    const product = this.getProduct(productId);
+    if (!product) return null;
+    
+    // Étape 3: Vérifier si le produit est déjà dans le panier
+    const existing = cart.find(i => i.productId === productId);
+    
+    // Étape 4: Mettre à jour la quantité ou ajouter le produit
+    if (existing) { 
+      existing.qty += qty; 
+    } else { 
+      cart.push({ productId, name: product.name, price: product.price, img: product.img, qty }); 
     }
-    this._set(this.KEYS.CART, cart); // Sauvegarde le panier modifié
+    
+    // Étape 5: Sauvegarder le panier
+    this._set(this.KEYS.CART, cart);
     return cart;
   },
-
-  // Supprime un produit du panier
+  
+  // Supprime complètement un produit du panier
   removeFromCart(productId) {
-    const cart = this.getCart().filter(i => i.productId !== productId); // Filtre pour exclure le produit
-    this._set(this.KEYS.CART, cart); // Sauvegarde le panier modifié
+    const cart = this.getCart().filter(i => i.productId !== productId);
+    this._set(this.KEYS.CART, cart);
     return cart;
   },
-
+  
   // Vide complètement le panier
   clearCart() { this._set(this.KEYS.CART, []); },
+  
+  // Calcule le total du panier
+  getCartTotal() { return this.getCart().reduce((sum, i) => sum + i.price * i.qty, 0); },
 
-  // Calcule le montant total du panier
-  getCartTotal() {
-    return this.getCart().reduce((sum, i) => sum + i.price * i.qty, 0); // Somme (prix x quantité) pour chaque article
-  },
-
-  // ── ORDERS ──────────────────────────────────────
-  // Crée une nouvelle commande et l'enregistre
+  // ── MÉTHODES COMMANDES ─────────────────────────────
+  // Crée une nouvelle commande
   createOrder({ customer, items, total, paymentMethod }) {
-    const orders = this._get(this.KEYS.ORDERS);          // Récupère toutes les commandes
-    const order = {                                       // Crée l'objet commande
-      id: this._id(),                                     // Génère un ID unique
-      customer,                                           // Infos du client
-      items,                                              // Articles commandés
-      total,                                              // Montant total
-      paymentMethod,                                      // Méthode de paiement (MonCash/NatCash)
-      status: 'pending_payment',                          // Statut initial
-      createdAt: new Date().toISOString(),               // Date et heure de création
+    // Étape 1: Récupérer les commandes existantes
+    const orders = this._get(this.KEYS.ORDERS);
+    
+    // Étape 2: Créer l'objet commande
+    const order = { 
+      id: this._id(), 
+      customer, 
+      items, 
+      total, 
+      paymentMethod, 
+      status: 'pending_payment', 
+      createdAt: new Date().toISOString() 
     };
-    orders.push(order);                                   // Ajoute à la liste
-    this._set(this.KEYS.ORDERS, orders);                // Sauvegarde
-    return order;                                         // Retourne la commande créée
+    
+    // Étape 3: Ajouter et sauvegarder
+    orders.push(order);
+    this._set(this.KEYS.ORDERS, orders);
+    return order;
   },
 
-  // Récupère toutes les commandes
-  getOrders() { return this._get(this.KEYS.ORDERS); },
-
-  // ── MESSAGES ────────────────────────────────────
-  // Sauvegarde un nouveau message de contact
+  // ── MÉTHODES MESSAGES ──────────────────────────────
+  // Sauvegarde un message de contact
   saveMessage({ name, phone, email, message }) {
-    const messages = this._get(this.KEYS.MESSAGES);     // Récupère tous les messages
-    const msg = {                                        // Crée l'objet message
-      id: this._id(),                                    // Génère un ID unique
-      name, phone, email, message,                       // Données du message
-      createdAt: new Date().toISOString(),              // Date et heure
-      read: false,                                       // Non lu au départ
+    // Étape 1: Récupérer les messages existants
+    const messages = this._get(this.KEYS.MESSAGES);
+    
+    // Étape 2: Créer l'objet message
+    const msg = { 
+      id: this._id(), 
+      name, 
+      phone, 
+      email, 
+      message, 
+      createdAt: new Date().toISOString(), 
+      read: false 
     };
-    messages.push(msg);                                  // Ajoute à la liste
-    this._set(this.KEYS.MESSAGES, messages);           // Sauvegarde
-    return msg;                                          // Retourne le message créé
+    
+    // Étape 3: Ajouter et sauvegarder
+    messages.push(msg);
+    this._set(this.KEYS.MESSAGES, messages);
+    return msg;
   },
-
-  // Récupère tous les messages de contact
-  getMessages() { return this._get(this.KEYS.MESSAGES); },
 };
 
-// Expose DB globalement (accessible depuis app.js)
+// Exposer l'objet DB globalement pour l'utiliser dans app.js
 window.DB = DB;
