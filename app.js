@@ -1,318 +1,348 @@
 /**
- * BoutiqueHaïti – Main App Logic
- * Handles: products, cart, checkout, payments (MonCash/NatCash), contact form
+ * KIA'S WIGS AND BEAUTY – App Logic
  */
 
-// ── CONFIG ──────────────────────────────────────────
-const CONFIG = { // Configuration globale pour les contacts
-  whatsappNumber: '3902-8437',   // Numéro WhatsApp (sans +509)
-  phone: '+509 39 02 8437',     // Téléphone de contact
-  email: 'michaelherm27@gmail.com', // Email du support
-  moncashNumber: '+509 46-27-0776', // Compte MonCash pour paiements
-  natcashNumber: '+509 35-00-0947', // Compte NatCash pour paiements
+// Configuration globale de l'application
+const CONFIG = {
+  whatsappNumber: '50912345678',
+  phone: '+509 12 34 5678',
+  email: 'contact@kiaswigsandbeauty.com',
+  moncashNumber: '+509 37-00-0000',
+  natcashNumber: '+509 36-00-0000',
 };
 
-// ── STATE ───────────────────────────────────────────
-let currentCategory = 'all'; // Catégorie de produit sélectionnée
-let selectedPayment = null;  // Méthode de paiement choisie par l'utilisateur
+// Variable pour stocker le paiement sélectionné
+let selectedPayment = null;
 
-// ── INIT ────────────────────────────────────────────
-// Exécuté une fois que le DOM est complètement chargé
+// Initialisation de l'application au chargement du DOM
 document.addEventListener('DOMContentLoaded', () => {
-  renderProducts('all');     // Affiche tous les produits au démarrage
-  updateCartUI();            // Met à jour le compteur et total du panier
-  setupScrollEffects();      // Active les animations au scroll
+  renderProducts();  // Étape 1: Afficher tous les produits
+  updateCartUI();    // Étape 2: Mettre à jour l'interface du panier
+  setupScrollEffects(); // Étape 3: Configurer les effets de défilement
 });
 
-// ── PRODUCTS ────────────────────────────────────────
-// Affiche les produits dans la grille en fonction de la catégorie
-function renderProducts(category) {
-  const grid = document.getElementById('productsGrid'); // Conteneur des produits
-  const products = DB.getProducts(category);          // Récupère les produits de la catégorie
-  grid.innerHTML = ''; // Vide le contenu existant
-
-  if (products.length === 0) { // Si aucun produit trouvé
-    grid.innerHTML = '<p style="text-align:center;color:var(--text-light);grid-column:1/-1;padding:3rem">Aucun produit trouvé.</p>';
-    return;
-  }
-
-  // Crée une carte pour chaque produit
+// ── PRODUCTS ──────────────────────────────────────
+function renderProducts() {
+  // Étape 1: Récupérer le conteneur de la grille de produits
+  const grid = document.getElementById('productsGrid');
+  
+  // Étape 2: Obtenir la liste des produits depuis la base de données
+  const products = DB.getProducts();
+  
+  // Étape 3: Vider le conteneur avant de le remplir
+  grid.innerHTML = '';
+  
+  // Étape 4: Créer et ajouter chaque carte de produit
   products.forEach((p, i) => {
-    const card = document.createElement('div');        // Crée l'élément div
-    card.className = 'product-card';                   // Ajoute la classe CSS
-    card.style.animationDelay = `${i * 0.07}s`;        // Décale l'animation de chaque carte
-    card.style.animation = 'fadeUp .5s ease both';     // Animation d'apparition fluide
+    // Créer l'élément de carte
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    
+    // Ajouter un délai d'animation pour chaque carte
+    card.style.cssText = `animation-delay:${i * 0.06}s; animation: fadeUp .5s ease both`;
+    
+    // Générer le HTML de la carte avec les informations du produit
     card.innerHTML = `
-      <div class="product-img" style="background:${p.bg}">
+      <div class="product-img-wrap">
         ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
-        ${p.emoji}
+        <img src="${p.img}" alt="${p.name}" class="product-photo" onclick="openLightbox('${p.img}','${p.name}')" loading="lazy" />
+        <div class="img-overlay"><i class="fas fa-search-plus"></i></div>
       </div>
       <div class="product-info">
-        <div class="product-category">${categoryLabel(p.category)}</div>
+        <div class="product-type">${p.type}</div>
         <div class="product-name">${p.name}</div>
+        <div class="product-length"><i class="fas fa-ruler-horizontal"></i> ${p.length}</div>
         <div class="product-desc">${p.desc}</div>
         <div class="product-footer">
           <div class="product-price">${p.price.toLocaleString()} <small>HTG</small></div>
-          <button class="btn-add" onclick="addToCart(${p.id})" title="Ajouter au panier">
-            <i class="fas fa-plus"></i>
-          </button>
+          <button class="btn-add" onclick="addToCart(${p.id})" title="Ajouter au panier"><i class="fas fa-shopping-bag"></i></button>
         </div>
       </div>
     `;
+    
+    // Étape 5: Ajouter la carte à la grille
     grid.appendChild(card);
   });
 }
 
-// Convertit le code catégorie en label avec emoji
-function categoryLabel(cat) {
-  const labels = { // Dictionnaire des catégories avec emojis
-    alimentaire: '🍽 Alimentaire',
-    artisanat: '🎨 Artisanat',
-    beaute: '💆 Beauté',
-    mode: '👗 Mode'
-  };
-  return labels[cat] || cat; // Retourne le label ou le code si non trouvé
+// ── LIGHTBOX ──────────────────────────────────────
+function openLightbox(src, alt) {
+  // Étape 1: Définir la source et l'alt de l'image dans la lightbox
+  document.getElementById('lbImg').src = src;
+  document.getElementById('lbImg').alt = alt;
+  
+  // Étape 2: Activer la lightbox (afficher la modale)
+  document.getElementById('lightbox').classList.add('active');
+  
+  // Étape 3: Désactiver le défilement du body pour éviter les conflits
+  document.body.style.overflow = 'hidden';
 }
 
-// Filtre les produits par catégorie et met en surbrillance le bouton
-function filterProducts(category, btn) {
-  currentCategory = category;                                         // Mise à jour de la catégorie active
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); // Retire la surbrillance des autres
-  btn.classList.add('active');                                        // Surbrille le bouton cliqué
-  renderProducts(category);                                           // Affiche les produits de la catégorie
+function closeLightbox() {
+  // Étape 1: Désactiver la lightbox (cacher la modale)
+  document.getElementById('lightbox').classList.remove('active');
+  
+  // Étape 2: Réactiver le défilement du body
+  document.body.style.overflow = '';
 }
 
-// ── CART ────────────────────────────────────────────
-// Ajoute un produit au panier et affiche une notification
+// ── CART ──────────────────────────────────────────
 function addToCart(productId) {
-  DB.addToCart(productId);              // Ajoute à la base de données (localStorage)
-  updateCartUI();                       // Met à jour l'affichage du panier
-  const p = DB.getProduct(productId);   // Récupère les détails du produit
-  showToast(`${p.emoji} "${p.name}" ajouté au panier!`); // Notification de confirmation
+  // Étape 1: Ajouter le produit au panier via la base de données
+  DB.addToCart(productId);
+  
+  // Étape 2: Mettre à jour l'interface du panier (compteur, total)
+  updateCartUI();
+  
+  // Étape 3: Récupérer les informations du produit pour le message
+  const p = DB.getProduct(productId);
+  
+  // Étape 4: Afficher un message de confirmation
+  showToast(`✅ "${p.name}" ajouté au panier!`);
 }
 
-// Supprime un produit du panier
 function removeFromCart(productId) {
-  DB.removeFromCart(productId); // Supprime de la base de données
-  updateCartUI();               // Mise à jour du compteur et total
-  renderCartItems();            // Réaffiche les articles du panier
+  // Étape 1: Supprimer le produit du panier
+  DB.removeFromCart(productId);
+  
+  // Étape 2: Mettre à jour l'interface du panier
+  updateCartUI();
+  
+  // Étape 3: Re-rendre les éléments du panier
+  renderCartItems();
 }
 
-// Ouvre ou ferme le panier (sidebar)
 function toggleCart() {
-  const sidebar = document.getElementById('cartSidebar'); // Récupère le panneau du panier
-  const overlay = document.getElementById('cartOverlay');  // Récupère l'overlay (fond sombre)
-  const isOpen = sidebar.classList.contains('open');       // Vérifie si ouvert
+  // Étape 1: Récupérer les éléments du DOM
+  const sidebar = document.getElementById('cartSidebar');
+  const overlay = document.getElementById('cartOverlay');
+  
+  // Étape 2: Vérifier si le panier est ouvert
+  const isOpen = sidebar.classList.contains('open');
+  
+  // Étape 3: Basculer l'état du panier
   if (isOpen) {
-    sidebar.classList.remove('open');   // Ferme si ouvert
+    // Fermer le panier
+    sidebar.classList.remove('open');
     overlay.classList.remove('active');
   } else {
-    sidebar.classList.add('open');      // Ouvre si fermé
+    // Ouvrir le panier et afficher les éléments
+    sidebar.classList.add('open');
     overlay.classList.add('active');
-    renderCartItems();                  // Affiche les articles à jour
+    renderCartItems();
   }
 }
 
-// Affiche tous les articles du panier
 function renderCartItems() {
-  const container = document.getElementById('cartItems'); // Conteneur des articles
-  const cart = DB.getCart();                             // Récupère tous les articles
-  if (cart.length === 0) { // Si panier vide
+  // Étape 1: Récupérer le conteneur des éléments du panier
+  const container = document.getElementById('cartItems');
+  
+  // Étape 2: Obtenir le contenu du panier
+  const cart = DB.getCart();
+  
+  // Étape 3: Vérifier si le panier est vide
+  if (cart.length === 0) {
     container.innerHTML = `<div class="cart-empty"><i class="fas fa-shopping-bag"></i><p>Votre panier est vide</p></div>`;
-    return; // Sort de la fonction
+    return;
   }
+  
+  // Étape 4: Générer le HTML pour chaque élément du panier
   container.innerHTML = cart.map(item => `
     <div class="cart-item">
-      <div class="cart-item-img">${item.emoji}</div>
+      <img src="${item.img}" alt="${item.name}" class="cart-item-img" />
       <div class="cart-item-info">
         <div class="cart-item-name">${item.name}</div>
         <div class="cart-item-price">${(item.price * item.qty).toLocaleString()} HTG ${item.qty > 1 ? `× ${item.qty}` : ''}</div>
       </div>
-      <button class="cart-item-remove" onclick="removeFromCart(${item.productId})">
-        <i class="fas fa-trash"></i>
-      </button>
+      <button class="cart-item-remove" onclick="removeFromCart(${item.productId})"><i class="fas fa-trash"></i></button>
     </div>
   `).join('');
 }
 
-// Met à jour l'affichage du panier (compteur et total)
 function updateCartUI() {
-  const cart = DB.getCart();                                            // Récupère les articles
-  const count = cart.reduce((s, i) => s + i.qty, 0);                    // Compte le nombre total (quantités)
-  const total = DB.getCartTotal();                                      // Calcule le total
-  document.getElementById('cartCount').textContent = count;             // Affiche le nombre d'articles
-  document.getElementById('cartTotal').textContent = total.toLocaleString() + ' HTG'; // Affiche le total formaté
+  // Étape 1: Récupérer le contenu du panier
+  const cart = DB.getCart();
+  
+  // Étape 2: Calculer le nombre total d'articles
+  const count = cart.reduce((s, i) => s + i.qty, 0);
+  
+  // Étape 3: Mettre à jour l'affichage du compteur et du total
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('cartTotal').textContent = DB.getCartTotal().toLocaleString() + ' HTG';
 }
 
-// ── CHECKOUT ────────────────────────────────────────
-// Ouvre le formulaire de commande
+// ── CHECKOUT ──────────────────────────────────────
 function openCheckout() {
-  const cart = DB.getCart();                                                 // Récupère le panier
-  if (cart.length === 0) { showToast('Votre panier est vide!'); return; }    // Empêche le checkout si vide
-  selectedPayment = null; // Réinitialise le paiement sélectionné
-  document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected')); // Retire sélection
-  document.getElementById('moncashInstructions').style.display = 'none'; // Cache les infos MonCash
-  document.getElementById('natcashInstructions').style.display = 'none'; // Cache les infos NatCash
-  document.getElementById('checkoutModal').classList.add('active');      // Affiche la modale
-  // Ferme le panier
-  document.getElementById('cartSidebar').classList.remove('open');       // Ferme le panneau du panier
-  document.getElementById('cartOverlay').classList.remove('active');     // Cache l'overlay
+  // Étape 1: Vérifier que le panier n'est pas vide
+  if (DB.getCart().length === 0) {
+    showToast('⚠️ Votre panier est vide!');
+    return;
+  }
+  
+  // Étape 2: Réinitialiser la sélection de paiement
+  selectedPayment = null;
+  document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected'));
+  
+  // Étape 3: Cacher les instructions de paiement
+  document.getElementById('moncashInstructions').style.display = 'none';
+  document.getElementById('natcashInstructions').style.display = 'none';
+  
+  // Étape 4: Ouvrir la modale de checkout
+  document.getElementById('checkoutModal').classList.add('active');
+  
+  // Étape 5: Fermer le sidebar du panier
+  document.getElementById('cartSidebar').classList.remove('open');
+  document.getElementById('cartOverlay').classList.remove('active');
 }
 
-// Ferme le formulaire de commande
 function closeCheckout() {
-  document.getElementById('checkoutModal').classList.remove('active'); // Masque la modale
+  // Fermer la modale de checkout
+  document.getElementById('checkoutModal').classList.remove('active');
 }
 
-// Gère la sélection d'une méthode de paiement (MonCash ou NatCash)
 function selectPayment(method) {
-  selectedPayment = method;                                                           // Stocke la méthode
-  document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected')); // Retire sélection
-  document.getElementById(method + 'Card').classList.add('selected');                 // Surbrille la sélection
-  const total = DB.getCartTotal().toLocaleString() + ' HTG';                          // Calcule le total
-  const cart = DB.getCart();                                                          // Récupère les articles
-  const items = cart.map(i => `${i.qty}x ${i.name}`).join(', ');                     // Formate la liste
-
-  // Prépare le message WhatsApp avec les articles
-  const baseMsg = encodeURIComponent(`Bonjour BoutiqueHaïti! 🛍️\n\nJe viens de passer une commande:\n${items}\n\nTotal: ${total}\nMéthode: ${method === 'moncash' ? 'MonCash' : 'NatCash'}\n\nVoici mon reçu de paiement:`);
-
-  // Affiche ou cache les instructions selon la méthode choisie
+  // Étape 1: Enregistrer la méthode de paiement sélectionnée
+  selectedPayment = method;
+  
+  // Étape 2: Mettre à jour l'interface pour montrer la sélection
+  document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById(method + 'Card').classList.add('selected');
+  
+  // Étape 3: Calculer le total et préparer les informations de commande
+  const total = DB.getCartTotal().toLocaleString() + ' HTG';
+  const cart = DB.getCart();
+  const items = cart.map(i => `${i.qty}x ${i.name}`).join(', ');
+  
+  // Étape 4: Préparer le message de base pour WhatsApp
+  const baseMsg = encodeURIComponent(`Bonjour KIA'S WIGS AND BEAUTY! 💆‍♀️\n\nCommande:\n${items}\n\nTotal: ${total}\nPaiement: ${method === 'moncash' ? 'MonCash' : 'NatCash'}\n\nVoici mon reçu:`);
+  
+  // Étape 5: Afficher les instructions appropriées selon la méthode
   document.getElementById('moncashInstructions').style.display = method === 'moncash' ? 'block' : 'none';
   document.getElementById('natcashInstructions').style.display = method === 'natcash' ? 'block' : 'none';
-
-  if (method === 'moncash') { // Si MonCash
-    document.getElementById('mcAmount').textContent = total;                          // Affiche le montant
-    document.getElementById('mcWhatsapp').href = `https://wa.me/${CONFIG.whatsappNumber}?text=${baseMsg}`; // Crée le lien WhatsApp
-    document.getElementById('mcWhatsapp').target = '_blank';                          // Ouvre dans nouvel onglet
-  } else { // Si NatCash
+  
+  // Étape 6: Configurer les liens WhatsApp selon la méthode
+  if (method === 'moncash') {
+    document.getElementById('mcAmount').textContent = total;
+    document.getElementById('mcWhatsapp').href = `https://wa.me/${CONFIG.whatsappNumber}?text=${baseMsg}`;
+  } else {
     document.getElementById('ncAmount').textContent = total;
     document.getElementById('ncWhatsapp').href = `https://wa.me/${CONFIG.whatsappNumber}?text=${baseMsg}`;
-    document.getElementById('ncWhatsapp').target = '_blank';
   }
 }
 
-// Confirme la commande et envoie les détails par WhatsApp
 function confirmOrder() {
-  // Récupère et nettoie les informations du client
-  const name = document.getElementById('custName').value.trim();      // Nom
-  const phone = document.getElementById('custPhone').value.trim();    // Téléphone
-  const address = document.getElementById('custAddress').value.trim(); // Adresse
-
+  // Étape 1: Récupérer et valider les informations du client
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
+  
   // Validation des champs obligatoires
   if (!name) { showToast('⚠️ Veuillez entrer votre nom.'); return; }
   if (!phone) { showToast('⚠️ Veuillez entrer votre téléphone.'); return; }
   if (!address) { showToast('⚠️ Veuillez entrer votre adresse.'); return; }
   if (!selectedPayment) { showToast('⚠️ Choisissez une méthode de paiement.'); return; }
-
-  const cart = DB.getCart();     // Récupère les articles
-  const total = DB.getCartTotal(); // Calcule le total
-
-  // Crée une commande dans la base de données
+  
+  // Étape 2: Récupérer les informations de la commande
+  const cart = DB.getCart();
+  const total = DB.getCartTotal();
+  
+  // Étape 3: Créer la commande dans la base de données
   const order = DB.createOrder({
-    customer: { name, phone, address }, // Infos du client
-    items: cart,                        // Articles commandés
-    total,                              // Montant total
-    paymentMethod: selectedPayment,     // Méthode de paiement
+    customer: { name, phone, address },
+    items: cart,
+    total,
+    paymentMethod: selectedPayment
   });
-
-  // Prépare le message WhatsApp détaillé avec emojis
-  const items = cart.map(i => `  • ${i.qty}x ${i.name} – ${(i.price * i.qty).toLocaleString()} HTG`).join('\n'); // Liste formatée
+  
+  // Étape 4: Préparer le message WhatsApp détaillé
+  const items = cart.map(i => `  • ${i.qty}x ${i.name} – ${(i.price * i.qty).toLocaleString()} HTG`).join('\n');
   const waMsg = encodeURIComponent(
-    `🛍️ *NOUVELLE COMMANDE – BoutiqueHaïti*\n\n` +
-    `📋 N° Commande: ${order.id}\n` +
-    `👤 Client: ${name}\n` +
-    `📞 Tél: ${phone}\n` +
-    `📍 Adresse: ${address}\n\n` +
-    `🛒 Articles:\n${items}\n\n` +
-    `💰 Total: ${total.toLocaleString()} HTG\n` +
-    `💳 Paiement: ${selectedPayment === 'moncash' ? 'MonCash' : 'NatCash'}\n\n` +
-    `Merci de confirmer la réception du paiement et la date de livraison. 🙏`
+    `👑 *NOUVELLE COMMANDE – KIA'S WIGS AND BEAUTY*\n\n` +
+    `📋 N° Commande: ${order.id}\n👤 Cliente: ${name}\n📞 Tél: ${phone}\n📍 Adresse: ${address}\n\n` +
+    `🛍️ Produits:\n${items}\n\n💰 Total: ${total.toLocaleString()} HTG\n💳 Paiement: ${selectedPayment === 'moncash' ? 'MonCash' : 'NatCash'}\n\nMerci de confirmer! 🙏`
   );
-
-  // Ouvre WhatsApp automatiquement avec les détails de la commande
+  
+  // Étape 5: Ouvrir WhatsApp avec le message
   window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${waMsg}`, '_blank');
-
-  DB.clearCart();      // Vide le panier
-  updateCartUI();      // Rafraîchit l'affichage
-  closeCheckout();     // Ferme la modale
-
-  // Affiche le message de succès avec infos de la commande
-  document.getElementById('successMessage').textContent =
-    `Votre commande a été enregistrée. Complétez votre paiement via ${selectedPayment === 'moncash' ? 'MonCash' : 'NatCash'} et envoyez votre reçu sur WhatsApp pour confirmer la livraison.`;
-  document.getElementById('orderId').textContent = order.id;               // Affiche le n° de commande
-  document.getElementById('successModal').classList.add('active');         // Affiche la modale de succès
-
-  // Réinitialise le formulaire
-  ['custName', 'custPhone', 'custAddress'].forEach(id => document.getElementById(id).value = ''); // Vide les champs
-  selectedPayment = null; // Réinitialise le paiement
+  
+  // Étape 6: Nettoyer l'état de l'application
+  DB.clearCart();
+  updateCartUI();
+  closeCheckout();
+  
+  // Étape 7: Afficher le message de succès
+  document.getElementById('successMessage').textContent = `Complétez votre paiement ${selectedPayment === 'moncash' ? 'MonCash' : 'NatCash'} et envoyez votre reçu sur WhatsApp pour confirmer la livraison.`;
+  document.getElementById('orderId').textContent = order.id;
+  document.getElementById('successModal').classList.add('active');
+  
+  // Étape 8: Réinitialiser le formulaire
+  ['custName', 'custPhone', 'custAddress'].forEach(id => document.getElementById(id).value = '');
+  selectedPayment = null;
 }
 
-// Ferme la modale de succès
 function closeSuccess() {
-  document.getElementById('successModal').classList.remove('active'); // Masque la modale
+  // Fermer la modale de succès
+  document.getElementById('successModal').classList.remove('active');
 }
 
-// ── CONTACT FORM ────────────────────────────────────
-// Traite la soumission du formulaire de contact
+// ── CONTACT ──────────────────────────────────────
 function submitContact(e) {
-  e.preventDefault(); // Arrête le rechargement automatique
-  // Récupère les données du formulaire
-  const name = document.getElementById('cName').value.trim();      // Nom
-  const phone = document.getElementById('cPhone').value.trim();    // Téléphone
-  const email = document.getElementById('cEmail').value.trim();    // Email
-  const message = document.getElementById('cMessage').value.trim(); // Message
-
-  // Sauvegarde le message dans la base de données (localStorage)
+  // Empêcher le rechargement de la page
+  e.preventDefault();
+  
+  // Récupérer et nettoyer les valeurs du formulaire
+  const name = document.getElementById('cName').value.trim();
+  const phone = document.getElementById('cPhone').value.trim();
+  const email = document.getElementById('cEmail').value.trim();
+  const message = document.getElementById('cMessage').value.trim();
+  
+  // Sauvegarder le message dans la base de données
   DB.saveMessage({ name, phone, email, message });
-
-  // Envoie aussi un message par WhatsApp
-  const waMsg = encodeURIComponent(`📩 *Message de Contact – BoutiqueHaïti*\n\n👤 Nom: ${name}\n📞 Tél: ${phone}\n📧 Email: ${email || 'Non fourni'}\n\n💬 Message:\n${message}`);
-  window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${waMsg}`, '_blank'); // Ouvre WhatsApp
-
-  // Affiche le message de succès
-  document.getElementById('contactForm').style.display = 'none';   // Cache le formulaire
-  document.getElementById('formSuccess').style.display = 'block';  // Affiche le message de confirmation
-  showToast('✅ Message envoyé avec succès!');                      // Notification toast
-
-  // Réinitialise après 6 secondes
+  
+  // Préparer le message WhatsApp
+  const waMsg = encodeURIComponent(`📩 *Message – KIA'S WIGS AND BEAUTY*\n\n👤 Nom: ${name}\n📞 Tél: ${phone}\n📧 Email: ${email || 'N/A'}\n\n💬 Message:\n${message}`);
+  
+  // Ouvrir WhatsApp avec le message
+  window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${waMsg}`, '_blank');
+  
+  // Afficher le message de succès
+  document.getElementById('contactForm').style.display = 'none';
+  document.getElementById('formSuccess').style.display = 'block';
+  showToast('✅ Message envoyé!');
+  
+  // Réinitialiser le formulaire après 6 secondes
   setTimeout(() => {
-    document.getElementById('contactForm').reset();                // Vide les champs
-    document.getElementById('contactForm').style.display = 'block'; // Réaffiche le formulaire
-    document.getElementById('formSuccess').style.display = 'none';  // Cache le message de succès
+    document.getElementById('contactForm').reset();
+    document.getElementById('contactForm').style.display = 'block';
+    document.getElementById('formSuccess').style.display = 'none';
   }, 6000);
 }
 
-// ── NAV ─────────────────────────────────────────────
-// Ouvre/ferme le menu mobile (hamburger menu)
+// ── NAVIGATION ────────────────────────────────────
 function toggleNav() {
-  document.getElementById('mobileNav').classList.toggle('open'); // Ajoute/retire la classe 'open'
+  // Basculer l'état du menu mobile
+  document.getElementById('mobileNav').classList.toggle('open');
 }
 
-// ── SCROLL EFFECTS ──────────────────────────────────
-// Active les effets visuels lors du scroll (ombre navbar + animations)
 function setupScrollEffects() {
-  const navbar = document.querySelector('.navbar'); // Récupère la navbar
-  // Ajoute une ombre quand on scroll
+  // Récupérer l'élément navbar
+  const navbar = document.getElementById('navbar');
+  
+  // Ajouter un effet de scroll à la navbar
   window.addEventListener('scroll', () => {
-    navbar.style.boxShadow = window.scrollY > 40 ? '0 4px 30px rgba(0,0,0,0.3)' : 'none'; // Ombre après 40px
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
   });
-
-  // Intersection Observer = déclenche animation quand élément visible
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.style.animation = 'fadeUp .6s ease both'; // Animation fade-in
-    });
-  }, { threshold: 0.1 }); // threshold: 10% de l'élément visible
-
-  // Observe les éléments qui doivent s'animer au scroll
-  document.querySelectorAll('.contact-card, .feature-item, .about-feature').forEach(el => observer.observe(el));
 }
 
-// ── TOAST ───────────────────────────────────────────
-// Affiche une notification temporaire en bas de l'écran
+// ── NOTIFICATIONS ─────────────────────────────────
 function showToast(msg) {
-  const t = document.getElementById('toast'); // Récupère l'élément toast
-  t.textContent = msg;                       // Ajoute le message
-  t.classList.add('show');                   // Affiche la notification (animation)
-  setTimeout(() => t.classList.remove('show'), 3200); // La cache après 3.2 secondes
+  // Récupérer l'élément toast
+  const t = document.getElementById('toast');
+  
+  // Définir le message et afficher le toast
+  t.textContent = msg;
+  t.classList.add('show');
+  
+  // Masquer le toast après 3.2 secondes
+  setTimeout(() => t.classList.remove('show'), 3200);
 }
